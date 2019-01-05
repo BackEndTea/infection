@@ -36,6 +36,7 @@ declare(strict_types=1);
 namespace Infection\Mutator\Unwrap;
 
 use Infection\Mutator\Util\Mutator;
+use Infection\Utils\NodeAnalyzer;
 use PhpParser\Node;
 
 /**
@@ -71,6 +72,6 @@ abstract class AbstractUnwrapMutator extends Mutator
             }
         }
 
-        return $node->name->toLowerString() === strtolower($this->getFunctionName());
+        return NodeAnalyzer::getLowerCasedName($node) === strtolower($this->getFunctionName());
     }
 }

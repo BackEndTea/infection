@@ -336,6 +336,27 @@ PHP
 $foo = 1;
 PHP
             ],
+            'it does decrement when compared with a variable function name call' => [
+                <<<'PHP'
+<?php
+
+$foo = 'function_name';
+if ($foo($a) === 0) {
+    echo 'bar';
+}
+PHP
+                ,
+                <<<'PHP'
+<?php
+
+$foo = 'function_name';
+if ($foo($a) === -1) {
+    echo 'bar';
+}
+
+PHP
+                ,
+            ],
         ];
     }
 }

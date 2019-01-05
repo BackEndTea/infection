@@ -36,6 +36,7 @@ declare(strict_types=1);
 namespace Infection\Mutator\Regex;
 
 use Infection\Mutator\Util\Mutator;
+use Infection\Utils\NodeAnalyzer;
 use PhpParser\Node;
 
 /**
@@ -61,8 +62,7 @@ final class PregMatchMatches extends Mutator
             return false;
         }
 
-        if (!$node->name instanceof Node\Name ||
-            $node->name->toLowerString() !== 'preg_match') {
+        if (NodeAnalyzer::getLowerCasedName($node) !== 'preg_match') {
             return false;
         }
 

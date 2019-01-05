@@ -36,6 +36,7 @@ declare(strict_types=1);
 namespace Infection\Mutator\Number;
 
 use Infection\Mutator\Util\Mutator;
+use Infection\Utils\NodeAnalyzer;
 use Infection\Visitor\ParentConnectorVisitor;
 use PhpParser\Node;
 
@@ -80,7 +81,7 @@ final class DecrementInteger extends Mutator
 
         if ($parentNode->left instanceof Node\Expr\FuncCall
             && \in_array(
-                $parentNode->left->name->toLowerString(),
+                NodeAnalyzer::getLowerCasedName($parentNode->left),
                 self::COUNT_NAMES,
                 true)
         ) {
@@ -89,7 +90,7 @@ final class DecrementInteger extends Mutator
 
         if ($parentNode->right instanceof Node\Expr\FuncCall
             && \in_array(
-                $parentNode->right->name->toLowerString(),
+                NodeAnalyzer::getLowerCasedName($parentNode->right),
                 self::COUNT_NAMES,
                 true)
         ) {

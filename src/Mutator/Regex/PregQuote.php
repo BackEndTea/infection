@@ -36,6 +36,7 @@ declare(strict_types=1);
 namespace Infection\Mutator\Regex;
 
 use Infection\Mutator\Util\Mutator;
+use Infection\Utils\NodeAnalyzer;
 use PhpParser\Node;
 
 /**
@@ -54,7 +55,6 @@ final class PregQuote extends Mutator
     protected function mutatesNode(Node $node): bool
     {
         return $node instanceof Node\Expr\FuncCall &&
-            $node->name instanceof Node\Name &&
-            $node->name->toLowerString() === 'preg_quote';
+            NodeAnalyzer::getLowerCasedName($node) === 'preg_quote';
     }
 }

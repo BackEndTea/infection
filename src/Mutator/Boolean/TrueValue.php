@@ -36,6 +36,7 @@ declare(strict_types=1);
 namespace Infection\Mutator\Boolean;
 
 use Infection\Mutator\Util\Mutator;
+use Infection\Utils\NodeAnalyzer;
 use PhpParser\Node;
 
 /**
@@ -60,6 +61,6 @@ final class TrueValue extends Mutator
             return false;
         }
 
-        return $node->name->toLowerString() === 'true';
+        return NodeAnalyzer::getLowerCasedName($node) === 'true';
     }
 }

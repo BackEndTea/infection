@@ -33,38 +33,45 @@
 
 declare(strict_types=1);
 
-namespace Infection\Mutator\Removal;
+namespace Infection\Tests\Utils;
 
-use Infection\Mutator\Util\Mutator;
 use Infection\Utils\NodeAnalyzer;
 use PhpParser\Node;
+use PHPUnit\Framework\TestCase;
 
 /**
  * @internal
  */
-final class FunctionCallRemoval extends Mutator
+final class NodeAnalyzerTest extends TestCase
 {
     /**
-     * Replaces "doSmth()" with ""
-     *
-     *
-     * @return Node\Stmt\Nop()
+     * @dataProvider providesNodesAndNames
      */
-    public function mutate(Node $node)
+    public function test_get_lower_cased_name(Node $node, string $name): void
     {
-        return new Node\Stmt\Nop();
+        $this->assertSame($name, NodeAnalyzer::getLowerCasedName($node));
     }
 
-    protected function mutatesNode(Node $node): bool
+    public function providesNodesAndNames(): \Generator
     {
-        if (!$node instanceof Node\Stmt\Expression) {
-            return false;
-        }
+        yield 'It returns the correct name' => [
+            new Node\Expr\FuncCall(new Node\Name('foo')),
+            'foo',
+        ];
 
-        if (!$node->expr instanceof Node\Expr\FuncCall) {
-            return false;
-        }
+        yield 'It returns the lowercased version of the name' => [
+            new Node\Expr\FuncCall(new Node\Name('foo_BAR')),
+            'foo_bar',
+        ];
 
-        return NodeAnalyzer::getLowerCasedName($node->expr) !== 'assert';
+        yield 'It doesn\'t crash if the name isn\'t set' => [
+            new Node\Expr\FuncCall(new Node\Scalar\String_('foo_bar')),
+            '',
+        ];
+
+        yield 'It does not crash when the node does not have a name' => [
+            new Node\Expr\BinaryOp\Plus(new Node\Scalar\LNumber(1), new Node\Scalar\LNumber(5)),
+            '',
+        ];
     }
 }

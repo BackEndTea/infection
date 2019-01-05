@@ -33,61 +33,23 @@
 
 declare(strict_types=1);
 
-namespace Infection\Mutator\Util;
+namespace Infection\Utils;
 
-use Webmozart\Assert\Assert;
+use PhpParser\Node;
 
 /**
  * @internal
  */
-final class MutatorParser
+final class NodeAnalyzer
 {
-    /**
-     * @var string|null
-     */
-    private $inputMutators;
-
-    /**
-     * @var array|Mutator[]
-     */
-    private $configMutators;
-
-    public function __construct(?string $inputMutators, array $configMutators)
+    public static function getLowerCasedName(Node $node): string
     {
-        $this->inputMutators = $inputMutators;
-        $this->configMutators = $configMutators;
-    }
+        $name = $node->name ?? null;
 
-    /**
-     * @return array|Mutator[]
-     */
-    public function getMutators(): array
-    {
-        $parsedMutators = $this->parseMutators();
-
-        if (\count($parsedMutators) > 0) {
-            $mutatorSettings = [];
-
-            foreach ($parsedMutators as $mutatorName) {
-                $mutatorSettings[$mutatorName] = true;
-            }
-            $generator = new MutatorsGenerator($mutatorSettings);
-
-            return $generator->generate();
+        if (!$name instanceof Node\Name) {
+            return '';
         }
 
-        return $this->configMutators;
-    }
-
-    private function parseMutators(): array
-    {
-        if ($this->inputMutators === null) {
-            return [];
-        }
-
-        $trimmedMutators = trim($this->inputMutators);
-        Assert::notEmpty($trimmedMutators, 'The "--mutators" option requires a value.');
-
-        return explode(',', $trimmedMutators);
+        return $name->toLowerString();
     }
 }
