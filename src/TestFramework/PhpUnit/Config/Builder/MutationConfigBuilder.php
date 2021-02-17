@@ -131,6 +131,34 @@ class MutationConfigBuilder extends ConfigBuilder
         return $path;
     }
 
+    public function buildExecutable(
+        array $tests,
+        string $mutantFilePath,
+        string $mutationHash,
+        string $mutationOriginalFilePath,
+        string $originalExecutable
+    ): string {
+        $customAutoloadFilePath = sprintf(
+            '%s/interceptor.execute.%s.infection.php',
+            $this->tmpDir,
+            $mutationHash
+        );
+
+        file_put_contents(
+            $customAutoloadFilePath,
+            $this->createCustomAutoloadWithInterceptor(
+                $mutationOriginalFilePath,
+                $mutantFilePath,
+                $originalExecutable,
+                true
+            )
+        );
+
+        \Safe\chmod($customAutoloadFilePath, 0777);
+
+        return $customAutoloadFilePath;
+    }
+
     private function getDom(): DOMDocument
     {
         if ($this->dom !== null) {
@@ -150,12 +178,14 @@ class MutationConfigBuilder extends ConfigBuilder
     private function createCustomAutoloadWithInterceptor(
         string $originalFilePath,
         string $mutantFilePath,
-        string $originalAutoloadFile
+        string $originalAutoloadFile,
+        bool $shebang = false
     ): string {
         $interceptorPath = IncludeInterceptor::LOCATION;
 
-        return sprintf(
+        $content = $shebang ?
             <<<'PHP'
+#!/usr/bin/env php
 <?php
 
 if (function_exists('proc_nice')) {
@@ -165,7 +195,20 @@ if (function_exists('proc_nice')) {
 require_once '%s';
 
 PHP
-            ,
+            :
+            <<<'PHP'
+<?php
+
+if (function_exists('proc_nice')) {
+    proc_nice(1);
+}
+%s
+require_once '%s';
+
+PHP;
+
+        return sprintf(
+            $content,
             $this->getInterceptorFileContent($interceptorPath, $originalFilePath, $mutantFilePath),
             $originalAutoloadFile
         );
