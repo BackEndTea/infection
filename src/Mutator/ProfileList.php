@@ -211,6 +211,7 @@ final class ProfileList
     ];
 
     public const UNWRAP_PROFILE = [
+        Mutator\Unwrap\UnwrapAbs::class,
         Mutator\Unwrap\UnwrapArrayChangeKeyCase::class,
         Mutator\Unwrap\UnwrapArrayChunk::class,
         Mutator\Unwrap\UnwrapArrayColumn::class,
@@ -407,6 +408,7 @@ final class ProfileList
         'CastString' => Mutator\Cast\CastString::class,
 
         // Unwrap
+        'UnwrapAbs' => Mutator\Unwrap\UnwrapAbs::class,
         'UnwrapArrayChangeKeyCase' => Mutator\Unwrap\UnwrapArrayChangeKeyCase::class,
         'UnwrapArrayChunk' => Mutator\Unwrap\UnwrapArrayChunk::class,
         'UnwrapArrayColumn' => Mutator\Unwrap\UnwrapArrayColumn::class,
